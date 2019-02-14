@@ -1,16 +1,18 @@
 package com.roberto.transactions;
 
+import org.springframework.stereotype.Service;
+
 import java.util.*;
 
+@Service
 public class TransactionHelper {
 
-    private TransactionAuthorizationRequest request;
-
-    public TransactionHelper(TransactionAuthorizationRequest transactionAuthorizationRequest) {
-        this.request = transactionAuthorizationRequest;
-    }
-
-    public Object analyze(){
+    /** Authorizes a new transaction from a request following TransactionAuthorizationRequest class
+     * @param request
+     * @return OutputReturn
+     * @author Roberto Gonçalves
+     */
+    public OutputReturn authorize(TransactionAuthorizationRequest request){
         List<String> deniedReasons = new ArrayList<>();
         OutputReturn outputReturn = new OutputReturn(true, 0.0, deniedReasons);
         request.getLastTransactions().add(request.getTransaction());
@@ -50,6 +52,10 @@ public class TransactionHelper {
         return outputReturn;
     }
 
+    /** Process amount of transactions based on the Last Transactions
+     * @param lastTransactions
+     * @return amount
+     */
     private double processTransactionsAmount(List<Transaction> lastTransactions){
         Iterator<Transaction> transactionIterator = lastTransactions.iterator();
         double amount = 0;
@@ -59,21 +65,33 @@ public class TransactionHelper {
         return amount;
     }
 
+    /** Order transactions in a ascending order by date
+     * @param lastTransactions
+     * @return lastTransactions ordered
+     */
     private List<Transaction> orderTransactions(List<Transaction> lastTransactions){
         lastTransactions.sort(Comparator.comparing(Transaction::getTime));
         return lastTransactions;
     }
 
+    /** Return a tuple indicating wherever a merchant have more than 10 transactions
+     * @param lastTransactions
+     * @return
+     */
     private Map.Entry<String, Integer> analyzeTransactionByMerchant(List<Transaction> lastTransactions){
         HashMap<String, Integer> transactionMerchant = countTransactionByMerchant(lastTransactions);
         Map.Entry<String, Integer> returnTuple = getTransactionByMerchantAboveTen(transactionMerchant);
         return returnTuple;
     }
+
+    /** Count the number of transactions by merchant
+     * @param lastTransactions
+     * @return transactionMerchant HashMap<String, Integer>
+     */
     private HashMap<String, Integer> countTransactionByMerchant(List<Transaction> lastTransactions){
         HashMap<String, Integer> transactionMerchant = new HashMap<>();
-        Iterator<Transaction> transactionIterator = lastTransactions.iterator();
-        while(transactionIterator.hasNext()){
-            String merchant = transactionIterator.next().getMerchant();
+        lastTransactions.forEach((transaction) -> {
+            String merchant = transaction.getMerchant();
             if(transactionMerchant.get(merchant) == null){
                 transactionMerchant.put(merchant, 1);
             }else{
@@ -81,28 +99,33 @@ public class TransactionHelper {
                 count++;
                 transactionMerchant.put(merchant, count);
             }
-        }
+        });
         return transactionMerchant;
     }
 
+    /**
+     * In a hashmap, select those who got more than 10 transactions
+     * @param transactionMerchant
+     * @return a pair indicating the exception or null
+     */
     private Map.Entry<String, Integer> getTransactionByMerchantAboveTen(HashMap<String, Integer> transactionMerchant){
-        Iterator<Map.Entry<String, Integer>> transactionIterator = transactionMerchant.entrySet().iterator();
-        while(transactionIterator.hasNext()){
-            Map.Entry<String, Integer> tuple = transactionIterator.next();
-            if(tuple.getValue() > 10){
-                return tuple;
+        for (Map.Entry<String, Integer> pair : transactionMerchant.entrySet()) {
+            if(pair.getValue() > 10){
+                return pair;
             }
         }
         return null;
     }
 
+    /**
+     * Iterates over merchantList and lastTransactions to see if it matches
+     * @param merchantList
+     * @param lastTransactions
+     * @return the transaction who got a blacklisted merchant or null
+     */
     private Transaction findMerchantBlackList(List<String> merchantList, List<Transaction> lastTransactions){
-        Iterator<String> merchantIterator = merchantList.iterator();
-        while(merchantIterator.hasNext()){
-            String merchant = merchantIterator.next();
-            Iterator<Transaction> transactionIterator = lastTransactions.iterator();
-            while(transactionIterator.hasNext()){
-                Transaction transaction = transactionIterator.next();
+        for(String merchant : merchantList){
+            for(Transaction transaction: lastTransactions){
                 if(transaction.getMerchant().equals(merchant)){
                     return transaction;
                 }
@@ -111,6 +134,11 @@ public class TransactionHelper {
         return null;
     }
 
+    /**
+     * Iterates over lastransactions to see if it has more than 3 transactions on a 2 minutes of interval between them
+     * @param lastTransactions
+     * @return true or false
+     */
     private boolean isThreeTransactionsOnTwoMinutes(List<Transaction> lastTransactions){
         if(countTransactionIntervalLessThanTwoMinutes(lastTransactions) >= 3){
             return true;
@@ -118,13 +146,17 @@ public class TransactionHelper {
             return false;
         }
     }
+
+    /**
+     * Only counts transactions by merchant if it has 2 minutes of interval
+     * @param lastTransactions
+     * @return count
+     * @apiNote see isThreeTransactionsOnTwoMinutes
+     */
     private int countTransactionIntervalLessThanTwoMinutes(List<Transaction> lastTransactions){
         Transaction current = null;
-        Transaction next;
         int count = 0;
-        Iterator<Transaction> transactionIterator = lastTransactions.iterator();
-        while(transactionIterator.hasNext()){
-            next = transactionIterator.next();
+        for(Transaction next: lastTransactions){
             if(current != null){
                 long minutes = calculateMinutes(next.getTime(), current.getTime());
                 if(minutes < 2){
@@ -136,6 +168,11 @@ public class TransactionHelper {
         return count;
     }
 
+    /** Calculate minutes between dates
+     * @param date1
+     * @param date2
+     * @return long as minutes
+     */
     private long calculateMinutes(Date date1, Date date2){
         return (date1.getTime() - date2.getTime())/60000;
     }

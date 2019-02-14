@@ -2,8 +2,6 @@ package com.roberto.transactions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Account {
@@ -35,32 +33,16 @@ public class Account {
         return isCardActive;
     }
 
-    public void setCardIsActive(boolean cardIsActive) {
-        this.isCardActive = cardIsActive;
-    }
-
     public double getLimit() {
         return limit;
-    }
-
-    public void setLimit(double limit) {
-        this.limit = limit;
     }
 
     public List getBlacklist() {
         return blacklist;
     }
 
-    public void setBlacklist(List blacklist) {
-        this.blacklist = blacklist;
-    }
-
     public boolean isWhiteListed() {
         return isWhiteListed;
-    }
-
-    public void setWhiteListed(boolean whiteListed) {
-        isWhiteListed = whiteListed;
     }
 
 }

@@ -19,7 +19,6 @@ import java.util.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,6 +35,10 @@ public class TransactionsApplicationTests {
 	@Autowired
 	private MockMvc mvc;
 
+	/**
+	 * Tests rule: The transaction amount should not be above limit
+	 * @throws Exception
+	 */
 	@Test
 	public void testTransactionsAmountAboveLimit() throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -55,6 +58,10 @@ public class TransactionsApplicationTests {
 					.andDo(print());
 	}
 
+	/**
+	 * Tests rule: No transaction should be approved when the card is blocked
+	 * @throws Exception
+	 */
 	@Test
 	public void testBlockedCard() throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -73,7 +80,10 @@ public class TransactionsApplicationTests {
 				.andExpect(content().json("{'approved':false,'newlimit':500.0,'deniedReasons':['Card is blocked, cannot approve actual transaction']}"))
 				.andDo(print());
 	}
-
+	/**
+	 * Tests rule: Inactive card (new implemented)
+	 * @throws Exception
+	 */
 	@Test
 	public void testInactiveCard() throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -92,7 +102,10 @@ public class TransactionsApplicationTests {
 				.andExpect(content().json("{'approved':false,'newlimit':500.0,'deniedReasons':['Card is inactive, cannot approve actual transaction']}"))
 				.andDo(print());
 	}
-
+	/**
+	 * Tests rule: The first transaction shouldn't be above 90% of the limit
+	 * @throws Exception
+	 */
 	@Test
 	public void testFirstTransactionAboveNinetyPercent () throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -111,7 +124,10 @@ public class TransactionsApplicationTests {
 				.andExpect(content().json("{'approved':false,'newlimit':500.0,'deniedReasons':['First transaction is above 90% of Account limit']}"))
 				.andDo(print());
 	}
-
+	/**
+	 * Tests rule: There should not be more than 10 transactions on the same merchant
+	 * @throws Exception
+	 */
 	@Test
 	public void testLimitOnTenTransactionsByMerchant () throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -150,7 +166,10 @@ public class TransactionsApplicationTests {
 				.andExpect(content().json("{'approved':false,'newlimit':500.0,'deniedReasons':['Transaction approved more than 10 times on merchant Dia number of times: 11']}"))
 				.andDo(print());
 	}
-
+	/**
+	 * Tests rule: Merchant blacklist
+	 * @throws Exception
+	 */
 	@Test
 	public void testMerchantBlackList () throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -192,7 +211,10 @@ public class TransactionsApplicationTests {
 				.andExpect(content().json("{'approved':false,'newlimit':500.0,'deniedReasons':['Transaction denied because account have the merchant Holy Burger on blacklist']}"))
 				.andDo(print());
 	}
-
+	/**
+	 * Tests rule: There should not be more than 3 transactions on a 2 minutes interval
+	 * @throws Exception
+	 */
 	@Test
 	public void testThreeTransactionsOnTwoMinutesInterval () throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -231,6 +253,10 @@ public class TransactionsApplicationTests {
 				.andExpect(content().json("{'approved':false,'newlimit':500.0,'deniedReasons':['Transaction denied because account have more than 3 transactions on a 2 minutes interval']}"))
 				.andDo(print());
 	}
+	/**
+	 * Tests all rules
+	 * @throws Exception
+	 */
 	@Test
 	public void testAllDeniedReasons () throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();
@@ -272,6 +298,10 @@ public class TransactionsApplicationTests {
 				.andExpect(content().json("{'approved':false,'newlimit':500.0,'deniedReasons':['Transactions amount is higher than Account limit','Card is blocked, cannot approve actual transaction','Card is inactive, cannot approve actual transaction','First transaction is above 90% of Account limit','Transaction approved more than 10 times on merchant Dia number of times: 11','Transaction denied because account have the merchant Holy Burger on blacklist','Transaction denied because account have more than 3 transactions on a 2 minutes interval']}"))
 				.andDo(print());
 	}
+	/**
+	 * Tests a authorized Transaction
+	 * @throws Exception
+	 */
 	@Test
 	public void testAuthorizedTransaction () throws Exception {
 		Map<String, Object> requestMap = new HashMap<>();

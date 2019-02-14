@@ -13,27 +13,11 @@ public class OutputReturn {
         this.deniedReasons = deniedReasons;
     }
 
-    public boolean isApproved() {
-        return approved;
-    }
-
     public void setApproved(boolean approved) {
         this.approved = approved;
     }
 
-    public double getNewlimit() {
-        return newlimit;
-    }
-
     public void setNewlimit(double newlimit) {
         this.newlimit = newlimit;
-    }
-
-    public List<String> getDeniedReasons() {
-        return deniedReasons;
-    }
-
-    public void setDeniedReasons(List<String> deniedReasons) {
-        this.deniedReasons = deniedReasons;
     }
 }
