@@ -1,6 +1,7 @@
 package com.roberto.transactions;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class TransactionsApplicationTests {
 
-	Gson gson = new Gson();
+	Gson gson = new GsonBuilder().enableComplexMapKeySerialization()
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+			.setLenient()
+			.setPrettyPrinting().create();
 	String pattern = "yyyy-MM-dd HH:mm:ss";
 	DateFormat df = new SimpleDateFormat(pattern);
 
@@ -46,8 +50,8 @@ public class TransactionsApplicationTests {
 		requestMap.put("transaction", actualTransaction);
 		requestMap.put("lastTransactions", lastTransactions);
 		String json = gson.toJson(requestMap);
-			this.mvc.perform(post("/create").contentType(MediaType.APPLICATION_JSON).content(json))
-					.andExpect(content().string("Transactions amount is higher than Account limit"))
+			this.mvc.perform(post("/authorizeTransaction").contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(content().string("\"Transactions amount is higher than Account limit\""))
 					.andDo(print());
 	}
 
@@ -65,8 +69,8 @@ public class TransactionsApplicationTests {
 		requestMap.put("transaction", actualTransaction);
 		requestMap.put("lastTransactions", lastTransactions);
 		String json = gson.toJson(requestMap);
-		this.mvc.perform(post("/create").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(content().string("Card is blocked, cannot approve actual transaction"))
+		this.mvc.perform(post("/authorizeTransaction").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(content().string("\"Card is blocked, cannot approve actual transaction\""))
 				.andDo(print());
 	}
 
@@ -84,8 +88,8 @@ public class TransactionsApplicationTests {
 		requestMap.put("transaction", actualTransaction);
 		requestMap.put("lastTransactions", lastTransactions);
 		String json = gson.toJson(requestMap);
-		this.mvc.perform(post("/create").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(content().string("Card is inactive, cannot approve actual transaction"))
+		this.mvc.perform(post("/authorizeTransaction").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(content().string("\"Card is inactive, cannot approve actual transaction\""))
 				.andDo(print());
 	}
 
@@ -103,8 +107,8 @@ public class TransactionsApplicationTests {
 		requestMap.put("transaction", actualTransaction);
 		requestMap.put("lastTransactions", lastTransactions);
 		String json = gson.toJson(requestMap);
-		this.mvc.perform(post("/create").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(content().string("First transaction is above 90% of Account limit"))
+		this.mvc.perform(post("/authorizeTransaction").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(content().string("\"First transaction is above 90% of Account limit\""))
 				.andDo(print());
 	}
 
@@ -142,8 +146,8 @@ public class TransactionsApplicationTests {
 		requestMap.put("transaction", actualTransaction);
 		requestMap.put("lastTransactions", lastTransactions);
 		String json = gson.toJson(requestMap);
-		this.mvc.perform(post("/create").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(content().string("Transaction approved more than 10 times on merchant Dia number of times: 11"))
+		this.mvc.perform(post("/authorizeTransaction").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(content().string("\"Transaction approved more than 10 times on merchant Dia number of times: 11\""))
 				.andDo(print());
 	}
 
@@ -184,8 +188,8 @@ public class TransactionsApplicationTests {
 		requestMap.put("transaction", actualTransaction);
 		requestMap.put("lastTransactions", lastTransactions);
 		String json = gson.toJson(requestMap);
-		this.mvc.perform(post("/create").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(content().string("Transaction denied because account have the merchant Holy Burger on blacklist"))
+		this.mvc.perform(post("/authorizeTransaction").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(content().string("\"Transaction denied because account have the merchant Holy Burger on blacklist\""))
 				.andDo(print());
 	}
 

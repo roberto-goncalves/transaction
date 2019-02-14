@@ -16,12 +16,12 @@ public class TransactionController {
 
     Gson gson = new Gson();
 
-    @RequestMapping(path="/create", method=RequestMethod.POST)
+    @RequestMapping(path="/authorizeTransaction", method=RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public Object create(@RequestBody Map<String, Object> requestMap) throws Exception {
-        Account account = gson.fromJson(gson.toJson(requestMap.get("account")), Account.class);
-        Transaction transaction = gson.fromJson(gson.toJson(requestMap.get("transaction")), Transaction.class);
-        List<Transaction> lastTransactions = gson.fromJson(gson.toJson(requestMap.get("lastTransactions")), new TypeToken<ArrayList<Transaction>>(){}.getType());
+    public Object authorizeTransaction(@RequestBody TransactionAuthorizationRequest request) throws Exception {
+        Account account = request.getAccount();
+        Transaction transaction = request.getTransaction();
+        List<Transaction> lastTransactions = request.getLastTransactions();
         lastTransactions.add(transaction);
         orderTransactions(lastTransactions);
         if(processTransactionsAmount(lastTransactions) > account.getLimit()){
