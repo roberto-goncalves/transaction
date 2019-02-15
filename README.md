@@ -28,13 +28,15 @@ The tests are divided on single method/rule as follows:
 
 ## Running application
 
-This command will make application available on port 8080
+Application runs on port 8080
 
 ```console
   $ mvn spring-boot:run
 ```
 
 ## To create a jar & run it
+
+Application runs on port 8080
 
 ```console
    $ mvn package
