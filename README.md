@@ -33,3 +33,12 @@ This command will make application available on port 8080
 ```console
   $ mvn spring-boot:run
 ```
+
+## To create a jar & run it
+
+```console
+   $ mvn package
+```
+```console
+   $ java -jar target/transactions-0.0.1-SNAPSHOT.jar
+```
