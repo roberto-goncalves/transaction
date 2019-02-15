@@ -4,7 +4,7 @@ Transaction authorization made with Spring Boot
 
 ## Requirements
 
-* Java JDK 8;
+* JDK 8;
 * Maven 3.5;
 
 ## Tests
