@@ -19,10 +19,10 @@ The tests are divided on single method/rule as follows:
 * testTransactionsAmountAboveLimit - Tests rule: The transaction amount should not be above limit
 * testBlockedCard - Tests rule: No transaction should be approved when the card is blocked
 * testInactiveCard - Tests rule: Inactive card (new implemented)
-* testFirstTransactionAboveNinetyPercent - Tests rule: The first transaction shouldn't be above 90% of the limit
-* testLimitOnTenTransactionsByMerchant - Tests rule: There should not be more than 10 transactions on the same merchant
+* testFirstTransactionAboveNinetyPercent - Tests rule: The first transaction shouldn't be above 90% of the limit - 90%>
+* testLimitOnTenTransactionsByMerchant - Tests rule: There should not be more than 10 transactions on the same merchant - 11>= should be denied
 * testMerchantBlackList - Tests rule: Merchant blacklist
-* testThreeTransactionsOnTwoMinutesInterval - Tests rule: There should not be more than 3 transactions on a 2 minutes interval
+* testThreeTransactionsOnTwoMinutesInterval - Tests rule: There should not be more than 3 transactions on a 2 minutes interval - 4>= should be denied
 * testAllDeniedReasons - Tests all rules
 * testAuthorizedTransaction - Tests a authorized Transaction
 
