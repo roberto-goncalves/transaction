@@ -44,3 +44,40 @@ Application runs on port 8080
 ```console
    $ java -jar target/transactions-0.0.1-SNAPSHOT.jar
 ```
+
+### Example of a valid request
+POST http://0.0.0.0:8080/authorizeTransaction
+```json
+   {
+  "lastTransactions": [
+    {
+      "merchant": "Pão de Açucar",
+      "amount": 100.0,
+      "time": "2012-11-15T00:00:00.000-0200"
+    },
+    {
+      "merchant": "Dia",
+      "amount": 100.0,
+      "time": "2012-11-15T00:00:00.000-0200"
+    }
+  ],
+  "account": {
+    "isCardActive": true,
+    "limit": 500.0,
+    "isWhiteListed": true
+  },
+  "transaction": {
+    "merchant": "Mack Grill",
+    "amount": 234.57,
+    "time": "2012-11-15T00:00:00.000-0200"
+  }
+}
+```
+Output:
+```json
+{
+    "approved": true,
+    "newlimit": 65.43,
+    "deniedReasons": []
+}
+```
