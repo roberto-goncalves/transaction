@@ -81,3 +81,47 @@ Output:
     "deniedReasons": []
 }
 ```
+
+### Example of a invalid request with two denied reasons
+```json
+   {
+  "lastTransactions": [
+    {
+      "merchant": "Pão de Açucar",
+      "amount": 100.0,
+      "time": "2012-11-15T00:00:00.000-0200"
+    },
+    {
+      "merchant": "Dia",
+      "amount": 100.0,
+      "time": "2012-11-15T00:00:00.000-0200"
+    },
+    {
+      "merchant": "Dia",
+      "amount": 100.0,
+      "time": "2012-11-15T00:00:00.000-0200"
+    }
+  ],
+  "account": {
+    "isCardActive": true,
+    "limit": 500.0,
+    "isWhiteListed": true
+  },
+  "transaction": {
+    "merchant": "Mack Grill",
+    "amount": 234.57,
+    "time": "2012-11-15T00:00:00.000-0200"
+  }
+}
+```
+Output:
+```json
+{
+    "approved": false,
+    "newlimit": 500,
+    "deniedReasons": [
+        "Transactions amount is higher than Account limit",
+        "Transaction denied because account have more than 3 transactions on a 2 minutes interval"
+    ]
+}
+```
