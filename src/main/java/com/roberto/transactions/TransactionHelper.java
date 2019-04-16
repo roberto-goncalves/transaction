@@ -18,7 +18,7 @@ public class TransactionHelper {
         OutputReturn outputReturn = new OutputReturn(true, new BigDecimal(0.0), deniedReasons);
         request.getLastTransactions().add(request.getTransaction());
         orderTransactions(request.getLastTransactions());
-        if(request.getAccount().getLimit().compareTo(processTransactionsAmount(request.getLastTransactions())) > 0){
+        if(request.getAccount().getLimit().compareTo(processTransactionsAmount(request.getLastTransactions())) < 0){
             deniedReasons.add("Transactions amount is higher than Account limit");
         }
         if(!request.getAccount().isWhiteListed()){
@@ -60,8 +60,9 @@ public class TransactionHelper {
     private BigDecimal processTransactionsAmount(List<Transaction> lastTransactions){
         Iterator<Transaction> transactionIterator = lastTransactions.iterator();
         BigDecimal amount = BigDecimal.ZERO;
+        int i = 0;
         while (transactionIterator.hasNext()) {
-            amount.add(transactionIterator.next().getAmount());
+            amount = amount.add(transactionIterator.next().getAmount());
         }
         return amount;
     }
