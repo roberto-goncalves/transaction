@@ -2,6 +2,7 @@ package com.roberto.transactions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class Account {
@@ -9,13 +10,13 @@ public class Account {
     @JsonProperty("cardIsActive")
     private boolean isCardActive;
     @JsonProperty("limit")
-    private double limit;
+    private BigDecimal limit;
     @JsonProperty("blacklist")
     private List<String> blacklist;
     @JsonProperty("isWhiteListed")
     private boolean isWhiteListed;
 
-    public Account(boolean cardIsActive, double limit, List blacklist, boolean isWhiteListed) {
+    public Account(boolean cardIsActive, BigDecimal limit, List blacklist, boolean isWhiteListed) {
         this.isCardActive = cardIsActive;
         this.limit = limit;
         this.blacklist = blacklist;
@@ -33,7 +34,7 @@ public class Account {
         return isCardActive;
     }
 
-    public double getLimit() {
+    public BigDecimal getLimit() {
         return limit;
     }
 

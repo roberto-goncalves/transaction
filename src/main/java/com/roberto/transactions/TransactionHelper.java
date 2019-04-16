@@ -2,6 +2,7 @@ package com.roberto.transactions;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -14,10 +15,10 @@ public class TransactionHelper {
      */
     public OutputReturn authorize(TransactionAuthorizationRequest request){
         List<String> deniedReasons = new ArrayList<>();
-        OutputReturn outputReturn = new OutputReturn(true, 0.0, deniedReasons);
+        OutputReturn outputReturn = new OutputReturn(true, new BigDecimal(0.0), deniedReasons);
         request.getLastTransactions().add(request.getTransaction());
         orderTransactions(request.getLastTransactions());
-        if(processTransactionsAmount(request.getLastTransactions()) > request.getAccount().getLimit()){
+        if(request.getAccount().getLimit().compareTo(processTransactionsAmount(request.getLastTransactions())) > 0){
             deniedReasons.add("Transactions amount is higher than Account limit");
         }
         if(!request.getAccount().isWhiteListed()){
@@ -26,7 +27,7 @@ public class TransactionHelper {
         if(!request.getAccount().isCardActive()){
             deniedReasons.add("Card is inactive, cannot approve actual transaction");
         }
-        if(request.getLastTransactions().get(0).getAmount() > (request.getAccount().getLimit() * 0.90)){
+        if(request.getLastTransactions().get(0).getAmount().compareTo(request.getAccount().getLimit().multiply(new BigDecimal(0.9))) > 0){
             deniedReasons.add("First transaction is above 90% of Account limit");
         }
         Map.Entry<String, Integer> returnTuple = analyzeTransactionByMerchant(request.getLastTransactions());
@@ -47,7 +48,7 @@ public class TransactionHelper {
             outputReturn.setNewlimit(request.getAccount().getLimit());
         }else{
             outputReturn.setApproved(true);
-            outputReturn.setNewlimit(request.getAccount().getLimit() - processTransactionsAmount(request.getLastTransactions()));
+            outputReturn.setNewlimit(request.getAccount().getLimit().subtract(processTransactionsAmount(request.getLastTransactions())));
         }
         return outputReturn;
     }
@@ -56,11 +57,11 @@ public class TransactionHelper {
      * @param lastTransactions
      * @return amount
      */
-    private double processTransactionsAmount(List<Transaction> lastTransactions){
+    private BigDecimal processTransactionsAmount(List<Transaction> lastTransactions){
         Iterator<Transaction> transactionIterator = lastTransactions.iterator();
-        double amount = 0;
+        BigDecimal amount = BigDecimal.ZERO;
         while (transactionIterator.hasNext()) {
-            amount += transactionIterator.next().getAmount();
+            amount.add(transactionIterator.next().getAmount());
         }
         return amount;
     }

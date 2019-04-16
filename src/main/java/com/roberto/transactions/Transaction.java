@@ -2,6 +2,7 @@ package com.roberto.transactions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Transaction {
@@ -9,11 +10,11 @@ public class Transaction {
     @JsonProperty("merchant")
     private String merchant;
     @JsonProperty("amount")
-    private double amount;
+    private BigDecimal amount;
     @JsonProperty("time")
     private Date time;
 
-    public Transaction(String merchant, double amount, Date time) {
+    public Transaction(String merchant, BigDecimal amount, Date time) {
         this.merchant = merchant;
         this.amount = amount;
         this.time = time;
@@ -29,7 +30,7 @@ public class Transaction {
         return merchant;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
